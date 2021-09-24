@@ -33,17 +33,30 @@ def texttobin(msg):
     newMsg = b64decode(msg.encode())
     return newMsg
 
-msg = input("your msg: ")
-#msg = "test message"
-encrypt(msg.encode())
+print("1 encrypt, 2 decrypt")
+choice = input("choice :")
+if choice == "1":
+    msg = input("your msg: ")
+    #msg = "test message"
+    encrypt(msg.encode())
+elif choice == "2":
+    nonce = input("nonce : ")
+    cipher = input("cipher : ")
+    key = input("key : ")
 
-file_in = open("encrypted.txt", "r")
-nonce = texttobin(file_in.readline())
-ciphertext = texttobin(file_in.read())
-file_key = open("key.txt", "r")
-newkey = texttobin(file_key.read())
+    nonce = texttobin(nonce)
+    cipher = texttobin(cipher)
+    key = texttobin(key)
 
-file_in.close()
-file_key.close()
+    decrypt(cipher, nonce, key)
 
-decrypt(ciphertext, nonce, newkey)
+# file_in = open("encrypted.txt", "r")
+# nonce = texttobin(file_in.readline())
+# ciphertext = texttobin(file_in.read())
+# file_key = open("key.txt", "r")
+# newkey = texttobin(file_key.read())
+
+# file_in.close()
+# file_key.close()
+
+# decrypt(ciphertext, nonce, newkey)
