@@ -32,7 +32,7 @@ stringMsg = input("Message : ")
 
 #encode the msg and print the key
 nonce, ciphertext, key = encrypt(stringMsg.encode())
-print(nonce, ciphertext, key)
+
 print("Key : ", bintotext(key))
 
 message = f'{len(bintotext(nonce)):04d}{bintotext(nonce)}'
