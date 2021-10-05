@@ -259,7 +259,7 @@ def generateSubKey(key):
 
     return expandedKey
 
-def encrypt(text, key):
+def encryptBlock(text, key):
     plainMat = textToMat(text)
     expandedKey = generateSubKey(key)
 
@@ -279,7 +279,7 @@ def encrypt(text, key):
 
     return(matToText(plainMat))
 
-def decrypt(cipher, key):
+def decryptBlock(cipher, key):
     cipherMat = textToMat(cipher)
     expandedKey = generateSubKey(key)
 
@@ -297,15 +297,34 @@ def decrypt(cipher, key):
 
         roundIndex -= 4
 
-    print(matToText(cipherMat))
+    return matToText(cipherMat)
+
+def encrypt(text, key):
+    blocks = splitBlocks(text)
+    for i in range(0, len(blocks)):
+        blocks[i] = encryptBlock(blocks[i], key)
+    return b''.join(blocks)
+
+def decrypt(text, key):
+    blocks = splitBlocks(text)
+    for i in range(0, len(blocks)):
+        blocks[i] = decryptBlock(blocks[i], key)
+    return b''.join(blocks)
+
+def splitBlocks(text):
+    blocks = []
+    for i in range(0, len(text), 16):
+        blocks.append(text[i:i+16])
+    return blocks
 
 
 #Randomly generated key
-#masterKey = get_random_bytes(16)
-masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
-plainText = b"1234567890123456"
-print(plainText)
+masterKey = get_random_bytes(16)
+print(masterKey)
+#masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
+plainText = b"123456789012345612345678901234561234567890123456"
+#plainText = b"1234567890123456"
 
-cipher = encrypt(plainText, masterKey)
-print(cipher)
-decrypt(cipher, masterKey)
+ciphertext = encrypt(plainText, masterKey)
+print(ciphertext.hex())
+print(decrypt(ciphertext, masterKey))
