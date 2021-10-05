@@ -1,5 +1,6 @@
 from os import stat
 from Crypto.Random import get_random_bytes
+from base64 import b64decode, b64encode
 
 s_box = (
     0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
@@ -123,12 +124,20 @@ mult14 = (
 def textToMat(text):
     return [list(text[i:i+4]) for i in range (0, len(text), 4)]
 
-def subBytes(col):
-    for i in range(0, len(col)):
-        col[i] = s_box[col[i]]
+def matToText(matrix):
+    return bytes(sum(matrix, []))
 
-def leftShift(matrix):
-    m = matrix
+def subBytes(mat):
+    for j in range(0, len(mat)):
+        for i in range(0, len(mat[j])):
+            mat[j][i] = s_box[mat[j][i]]
+
+def inverseSubBytes(mat):
+    for j in range(0, len(mat)):
+        for i in range(0, len(mat[j])):
+            mat[j][i] = inv_s_box[mat[j][i]]
+
+def leftShift(m):
     #left shift row 1
     m[0][1], m[1][1], m[2][1], m[3][1] = m[1][1], m[2][1], m[3][1], m[0][1]
     #left shift row 2
@@ -136,18 +145,13 @@ def leftShift(matrix):
     #left shift row 3
     m[0][3], m[1][3], m[2][3], m[3][3] = m[3][3], m[0][3], m[1][3], m[2][3]
 
-    return m
-
-def rightShift(matrix):
-    m = matrix
+def rightShift(m):
     #left shift row 1
     m[0][1], m[1][1], m[2][1], m[3][1] = m[3][1], m[0][1], m[1][1], m[2][1]
     #left shift row 2
     m[0][2], m[1][2], m[2][2], m[3][2] = m[2][2], m[3][2], m[0][2], m[1][2]
     #left shift row 3
     m[0][3], m[1][3], m[2][3], m[3][3] = m[1][3], m[2][3], m[3][3], m[0][3]
-
-    return m
 
 #https://crypto.stackexchange.com/questions/2402/how-to-solve-mixcolumns
 def times2(num):
@@ -156,6 +160,18 @@ def times2(num):
 
 def times3(num):
     return times2(num) ^ num
+
+def mixMat(mat):
+    mat[0] = mixCol(mat[0])
+    mat[1] = mixCol(mat[1])
+    mat[2] = mixCol(mat[2])
+    mat[3] = mixCol(mat[3])
+
+def inverseMixMat(mat):
+    mat[0] = inverseMixCol(mat[0])
+    mat[1] = inverseMixCol(mat[1])
+    mat[2] = inverseMixCol(mat[2])
+    mat[3] = inverseMixCol(mat[3])
 
 def mixCol(col):
     temp = list()
@@ -242,15 +258,54 @@ def generateSubKey(key):
         colIndex += 4
 
     return expandedKey
-    
+
+def encrypt(text, key):
+    plainMat = textToMat(text)
+    expandedKey = generateSubKey(key)
+
+    #add first round key (master key)
+    plainMat = addRoundKey(plainMat, expandedKey, 0)
+
+    #round function
+    roundIndex = 4
+    for i in range(0, 10):
+        subBytes(plainMat)
+        leftShift(plainMat)
+        if i != 9:
+            mixMat(plainMat)
+        plainMat = addRoundKey(plainMat, expandedKey, roundIndex)
+
+        roundIndex += 4
+
+    return(matToText(plainMat))
+
+def decrypt(cipher, key):
+    cipherMat = textToMat(cipher)
+    expandedKey = generateSubKey(key)
+
+    # last round key
+    cipherMat = addRoundKey(cipherMat, expandedKey, 40)
+
+    # round function
+    roundIndex = 36
+    for i in range(0, 10):
+        rightShift(cipherMat)
+        inverseSubBytes(cipherMat)
+        cipherMat = addRoundKey(cipherMat, expandedKey, roundIndex)
+        if i != 9:
+            inverseMixMat(cipherMat)
+
+        roundIndex -= 4
+
+    print(matToText(cipherMat))
+
 
 #Randomly generated key
 #masterKey = get_random_bytes(16)
 masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
 plainText = b"1234567890123456"
+print(plainText)
 
-plainMat = textToMat(plainText)
-masterKeyMat = textToMat(masterKey)
-print(plainMat)
-
-subkey = generateSubKey(masterKey)
+cipher = encrypt(plainText, masterKey)
+print(cipher)
+decrypt(cipher, masterKey)
