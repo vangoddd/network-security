@@ -317,14 +317,32 @@ def splitBlocks(text):
         blocks.append(text[i:i+16])
     return blocks
 
+    
+#https://en.wikipedia.org/wiki/Padding_(cryptography)
+
+def padMsg(text):
+    #pads the message using PKCS#7
+    padLength = 16 - (len(text) % 16)
+    pad = bytes([padLength] * padLength)
+    return text + pad
+
+def unpadMsg(text):
+    padLength = text[-1]
+    return text[:-padLength]
+    #unpads using PKCS#7
+
 
 #Randomly generated key
 masterKey = get_random_bytes(16)
 print(masterKey)
 #masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
-plainText = b"123456789012345612345678901234561234567890123456"
+plainText = b"1234567890123456123456789012345612345678901234561234567890123456728436"
 #plainText = b"1234567890123456"
 
-ciphertext = encrypt(plainText, masterKey)
+padded = padMsg(plainText)
+
+ciphertext = encrypt(padded, masterKey)
 print(ciphertext.hex())
-print(decrypt(ciphertext, masterKey))
+decrypted = decrypt(ciphertext, masterKey)
+print(unpadMsg(decrypted))
+
