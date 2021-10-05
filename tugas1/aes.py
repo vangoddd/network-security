@@ -47,6 +47,54 @@ rcon = (
 def textToMat(text):
     return [list(text[i:i+4]) for i in range (0, len(text), 4)]
 
+def subBytes(col):
+    for i in range(0, len(col)):
+        col[i] = s_box[col[i]]
+
+def leftShift(matrix):
+    m = matrix
+    #left shift row 1
+    m[0][1], m[1][1], m[2][1], m[3][1] = m[1][1], m[2][1], m[3][1], m[0][1]
+    #left shift row 2
+    m[0][2], m[1][2], m[2][2], m[3][2] = m[2][2], m[3][2], m[0][2], m[1][2]
+    #left shift row 3
+    m[0][3], m[1][3], m[2][3], m[3][3] = m[3][3], m[0][3], m[1][3], m[2][3]
+    
+    return m
+
+def times2(num):
+    return num << 1
+
+def times3(num):
+    return ((num << 1) ^ num)
+
+def mixCol(col):
+    temp = list()
+    #Addition -> XOR
+	#x2 -> left shift
+	#x3 -> left shift -> XOR
+    
+    #s0
+    # 2 3 1 1
+    temp.append(times2(col[0]) ^ times3(col[1]) ^ (col[2]) ^ (col[3]))
+    #s1
+    # 1 2 3 1
+    temp.append(col[0] ^ times2(col[1]) ^ times3(col[2]) ^ col[3])
+    #s2
+    # 1 1 2 3
+    temp.append(col[0] ^ col[1] ^ times2(col[2]) ^ times3(col[3]))
+    #s3
+    # 3 1 1 2
+    temp.append(times3(col[0]) ^ col[1] ^ col[2] ^ times2(col[3]))
+
+    return temp
+
+def addRoundKey(matrix, expandedKey, roundIndex):
+    temp = list()
+    for i in range(0, len(matrix)):
+        temp.append(XORcol(matrix[i], expandedKey[roundIndex+i]))
+    return temp
+
 #used in round key generation
 def shiftUp(col):
     temp = list()
@@ -67,6 +115,11 @@ def XORcol(col1, col2):
 #Randomly generated key
 #masterKey = get_random_bytes(16)
 masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
+plainText = b"1234567890123456"
+
+plainMat = textToMat(plainText)
+masterKeyMat = textToMat(masterKey)
+print(plainMat)
 
 #Key expansion
 def generateSubKey(key):
@@ -100,5 +153,3 @@ def generateSubKey(key):
     
 
 subkey = generateSubKey(masterKey)
-print(subkey)
-print(len(subkey))
