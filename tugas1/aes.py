@@ -138,11 +138,24 @@ def leftShift(matrix):
 
     return m
 
+def rightShift(matrix):
+    m = matrix
+    #left shift row 1
+    m[0][1], m[1][1], m[2][1], m[3][1] = m[3][1], m[0][1], m[1][1], m[2][1]
+    #left shift row 2
+    m[0][2], m[1][2], m[2][2], m[3][2] = m[2][2], m[3][2], m[0][2], m[1][2]
+    #left shift row 3
+    m[0][3], m[1][3], m[2][3], m[3][3] = m[1][3], m[2][3], m[3][3], m[0][3]
+
+    return m
+
+#https://crypto.stackexchange.com/questions/2402/how-to-solve-mixcolumns
 def times2(num):
-    return num << 1
+    temp = (num << 1) & 0xff
+    return temp if num < 128 else temp ^ 0x1b
 
 def times3(num):
-    return ((num << 1) ^ num)
+    return times2(num) ^ num
 
 def mixCol(col):
     temp = list()
@@ -239,6 +252,5 @@ plainText = b"1234567890123456"
 plainMat = textToMat(plainText)
 masterKeyMat = textToMat(masterKey)
 print(plainMat)
-
 
 subkey = generateSubKey(masterKey)
