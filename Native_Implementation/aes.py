@@ -331,37 +331,40 @@ def unpadMsg(text):
     return text[:-padLength]
     #unpads using PKCS#7
 
+def generateKey():
+    return get_random_bytes(16)
+
 
 #Randomly generated key
-masterKey = get_random_bytes(16)
-# print(masterKey)
-# #masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
-# plainText = b"1234567890123456123456789012345612345678901234561234567890123456728436"
-# #plainText = b"1234567890123456"
+# masterKey = get_random_bytes(16)
+# # print(masterKey)
+# # #masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
+# # plainText = b"1234567890123456123456789012345612345678901234561234567890123456728436"
+# # #plainText = b"1234567890123456"
 
-# padded = padMsg(plainText)
+# # padded = padMsg(plainText)
 
-# ciphertext = encrypt(padded, masterKey)
-# #print(ciphertext.hex())
-# decrypted = decrypt(ciphertext, masterKey)
-# #print(unpadMsg(decrypted))
+# # ciphertext = encrypt(padded, masterKey)
+# # #print(ciphertext.hex())
+# # decrypted = decrypt(ciphertext, masterKey)
+# # #print(unpadMsg(decrypted))
 
 
-f_input = open("input.png", "rb")
-data = f_input.read()
-encrypted_data = encrypt(data, masterKey)
+# f_input = open("input.png", "rb")
+# data = f_input.read()
+# encrypted_data = encrypt(data, masterKey)
 
-f_out = open(f_input.name + ".enc", "wb")
-f_out.write(encrypted_data)
+# f_out = open(f_input.name + ".enc", "wb")
+# f_out.write(encrypted_data)
 
-f_load = open("input.png.enc", "rb")
-data_load = f_load.read()
-decrypted = decrypt(data_load, masterKey)
+# f_load = open("input.png.enc", "rb")
+# data_load = f_load.read()
+# decrypted = decrypt(data_load, masterKey)
 
-fileName = " (decrypted)" + f_load.name[:-4]
-print(fileName)
+# fileName = " (decrypted)" + f_load.name[:-4]
+# print(fileName)
 
-f_load_save = open(fileName, "wb")
-f_load_save.write(decrypted)
+# f_load_save = open(fileName, "wb")
+# f_load_save.write(decrypted)
 
 
