@@ -36,11 +36,14 @@ socket.connect((host, port))
 print('Client has been assigned socket name', socket.getsockname())
 
 # Doing key exchange with diffie hellman
+print("Sending sender's public key")
 sendMsg(intToBytes(public_key_sender))
 data = recvall(socket)
+print("Received Receiver's public key")
 
 receiver_public_key = int(data.decode())
 shared_secret = private_key_sender.gen_shared_key(receiver_public_key)
+print("Shared secret generated")
 
 # Get AES Key from the 1st 16 bytes of the shared secret
 encryptionKey = shared_secret[:16].encode()
@@ -52,7 +55,19 @@ file_in = open(file_name, "rb")
 msg = file_in.read()
 file_in.close()
 
-encryptedMsg = aes.encrypt(msg, encryptionKey)
+# Encrypt file name and send
+print("Encrypting file name")
+encName = aes.encrypt(file_name.encode(), encryptionKey)
+sendMsg(encName)
 
+print("File name sent, sleeping for 1 sec")
+time.sleep(1)
+
+# Encrypt file content and send
+print("Encrypting file content")
+encryptedMsg = aes.encrypt(msg, encryptionKey)
+print("Encryption complete, sending file")
 sendMsg(encryptedMsg)
+
+print("File sent")
 

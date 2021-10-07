@@ -1,5 +1,4 @@
 import socket
-
 import sys
 sys.path.append("../")
 
@@ -42,21 +41,35 @@ print('  Socket peer:', socket.getpeername())
 
 # Doing key exchange with diffie hellman
 data = recvall(socket)
+print("Received Sender's public key")
 public_key_sender = int(data.decode())
+print("Sending public key to Sender")
 
 sendMsg(intToBytes(public_key_receiver))
+
 shared_secret = private_key_receiver.gen_shared_key(public_key_sender)
+print("Shared secret generated")
 
 # Get AES key from the 1st 16 bytes of the shared secret
 encryptionKey = shared_secret[:16].encode()
 
+#Receive file name
+encryptedName = recvall(socket)
+print("Received filename :")
+plainName = aes.decrypt(encryptedName, encryptionKey)
+
+print(plainName)
+
 #Receive the encrypted message
 encryptedMsg = recvall(socket)
-print("Received encrypted message :")
+print("Received encrypted file content")
 
 #Decrypt message using the shared secret as the key
+print("Decrypting encrypted file content")
 plaintext = aes.decrypt(encryptedMsg, encryptionKey)
 
-file_out = open("decrypted.png", "wb")
+file_out = open(plainName.decode(), "wb")
 file_out.write(plaintext)
+
+print("Decryption complete")
 
