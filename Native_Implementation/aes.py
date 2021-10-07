@@ -1,6 +1,6 @@
-from os import stat
 from Crypto.Random import get_random_bytes
 from base64 import b64decode, b64encode
+import os
 
 s_box = (
     0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
@@ -300,7 +300,7 @@ def decryptBlock(cipher, key):
     return matToText(cipherMat)
 
 def encrypt(text, key):
-    blocks = splitBlocks(text)
+    blocks = splitBlocks(padMsg(text))
     for i in range(0, len(blocks)):
         blocks[i] = encryptBlock(blocks[i], key)
     return b''.join(blocks)
@@ -309,7 +309,7 @@ def decrypt(text, key):
     blocks = splitBlocks(text)
     for i in range(0, len(blocks)):
         blocks[i] = decryptBlock(blocks[i], key)
-    return b''.join(blocks)
+    return unpadMsg(b''.join(blocks))
 
 def splitBlocks(text):
     blocks = []
@@ -334,15 +334,34 @@ def unpadMsg(text):
 
 #Randomly generated key
 masterKey = get_random_bytes(16)
-print(masterKey)
-#masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
-plainText = b"1234567890123456123456789012345612345678901234561234567890123456728436"
-#plainText = b"1234567890123456"
+# print(masterKey)
+# #masterKey = bytes.fromhex("000102030405060708090A0B0C0D0E0F")
+# plainText = b"1234567890123456123456789012345612345678901234561234567890123456728436"
+# #plainText = b"1234567890123456"
 
-padded = padMsg(plainText)
+# padded = padMsg(plainText)
 
-ciphertext = encrypt(padded, masterKey)
-print(ciphertext.hex())
-decrypted = decrypt(ciphertext, masterKey)
-print(unpadMsg(decrypted))
+# ciphertext = encrypt(padded, masterKey)
+# #print(ciphertext.hex())
+# decrypted = decrypt(ciphertext, masterKey)
+# #print(unpadMsg(decrypted))
+
+
+f_input = open("input.png", "rb")
+data = f_input.read()
+encrypted_data = encrypt(data, masterKey)
+
+f_out = open(f_input.name + ".enc", "wb")
+f_out.write(encrypted_data)
+
+f_load = open("input.png.enc", "rb")
+data_load = f_load.read()
+decrypted = decrypt(data_load, masterKey)
+
+fileName = " (decrypted)" + f_load.name[:-4]
+print(fileName)
+
+f_load_save = open(fileName, "wb")
+f_load_save.write(decrypted)
+
 
