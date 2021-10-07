@@ -1,6 +1,10 @@
-from aes import *
+
 import socket
 import time
+import sys
+sys.path.append("../")
+
+import aes
 import pyDH
 
 # msg is in byte
@@ -42,8 +46,13 @@ shared_secret = private_key_sender.gen_shared_key(receiver_public_key)
 encryptionKey = shared_secret[:16].encode()
 
 # Encrypt and send the message
-msg = b'this is the message'
-encryptedMsg = encrypt(msg, encryptionKey)
+file_name = input("Enter file name : ")
+
+file_in = open(file_name, "rb")
+msg = file_in.read()
+file_in.close()
+
+encryptedMsg = aes.encrypt(msg, encryptionKey)
 
 sendMsg(encryptedMsg)
 

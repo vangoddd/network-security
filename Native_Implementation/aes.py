@@ -120,6 +120,7 @@ mult14 = (
     0xd7,0xd9,0xcb,0xc5,0xef,0xe1,0xf3,0xfd,0xa7,0xa9,0xbb,0xb5,0x9f,0x91,0x83,0x8d
 )
 
+
 #Helper function to convert text to matrix by column
 def textToMat(text):
     return [list(text[i:i+4]) for i in range (0, len(text), 4)]
@@ -176,8 +177,8 @@ def inverseMixMat(mat):
 def mixCol(col):
     temp = list()
     #Addition -> XOR
-	#x2 -> left shift
-	#x3 -> left shift -> XOR
+    #x2 -> left shift
+    #x3 -> left shift -> XOR
 
     # 2 3 1 1
     # 1 2 3 1

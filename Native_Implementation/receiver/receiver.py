@@ -1,5 +1,9 @@
 import socket
-from aes import *
+
+import sys
+sys.path.append("../")
+
+import aes
 import pyDH
 
 #https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
@@ -48,9 +52,11 @@ encryptionKey = shared_secret[:16].encode()
 
 #Receive the encrypted message
 encryptedMsg = recvall(socket)
+print("Received encrypted message :")
 
 #Decrypt message using the shared secret as the key
-plaintext = decrypt(encryptedMsg, encryptionKey)
+plaintext = aes.decrypt(encryptedMsg, encryptionKey)
 
-print(plaintext)
+file_out = open("decrypted.png", "wb")
+file_out.write(plaintext)
 
