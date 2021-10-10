@@ -4,7 +4,7 @@ import time
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad
-from Crypto.Util.Padding import unpad
+
 
 sys.path.append("../../Native_Implementation/")
 import pyDH
@@ -72,9 +72,16 @@ print("File name sent, sleeping for 1 sec")
 time.sleep(1)
 
 # Encrypt file content and send
+
+#Counting time taken for decryption
+startTime = time.time()
+
 print("Encrypting file content")
 msgIv, encryptedMsg = encrypt(msg, encryptionKey)
 print("Encryption complete, sending file")
+print("File Size : " + str(len(msg)) + "(in bytes)")
+print("Encryption time : %s" % (time.time() - startTime))
+
 sendMsg(msgIv + encryptedMsg)
 
 print("File sent")

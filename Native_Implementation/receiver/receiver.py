@@ -1,5 +1,7 @@
 import socket
 import sys
+import time
+
 sys.path.append("../")
 
 import aes
@@ -65,11 +67,16 @@ encryptedMsg = recvall(socket)
 print("Received encrypted file content")
 
 #Decrypt message using the shared secret as the key
+startTime = time.time()
 print("Decrypting encrypted file content")
 plaintext = aes.decrypt(encryptedMsg, encryptionKey)
 
+print("File Size : " + str(len(plaintext)) + "(in bytes)")
+print("Decryption time : %s" % (time.time() - startTime))
+
 file_out = open(plainName.decode(), "wb")
 file_out.write(plaintext)
+file_out.close()
 
 print("Decryption complete")
 

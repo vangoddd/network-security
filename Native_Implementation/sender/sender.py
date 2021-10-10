@@ -64,9 +64,14 @@ print("File name sent, sleeping for 1 sec")
 time.sleep(1)
 
 # Encrypt file content and send
+startTime = time.time()
 print("Encrypting file content")
 encryptedMsg = aes.encrypt(msg, encryptionKey)
 print("Encryption complete, sending file")
+
+print("File Size : " + str(len(msg)) + "(in bytes)")
+print("Encryption time : %s" % (time.time() - startTime))
+
 sendMsg(encryptedMsg)
 
 print("File sent")

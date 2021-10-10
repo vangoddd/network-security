@@ -2,6 +2,7 @@ import socket
 import sys
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
+import time
 
 sys.path.append("../../Native_Implementation/")
 import pyDH
@@ -75,11 +76,20 @@ encryptedMsg = encryptedMsg[16:]
 print("Received encrypted file content")
 
 #Decrypt message using the shared secret as the key
+
+#Counting time taken for decryption
+startTime = time.time()
+
 print("Decrypting encrypted file content")
 plaintext = decrypt(encryptedMsg, msgIv, encryptionKey)
+print("Decryption complete")
+
+print("File Size : " + str(len(plaintext)) + "(in bytes)")
+print("Decryption time : %s" % (time.time() - startTime))
 
 file_out = open(plainName.decode(), "wb")
 file_out.write(plaintext)
+file_out.close()
 
-print("Decryption complete")
+
 
