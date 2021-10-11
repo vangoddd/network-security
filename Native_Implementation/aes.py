@@ -223,10 +223,11 @@ def shiftUp(col):
     return temp
 
 def XORcol(col1, col2):
-    temp = list()
-    for i in range(0, len(col1)):
-        temp.append(col1[i] ^ col2[i])
-    return temp
+    # temp = list()
+    # for i in range(0, len(col1)):
+    #     temp.append(col1[i] ^ col2[i])
+    # return temp
+    return [ col1[x] ^ col2[x] for x in range(4)]
 
 #Bytes conversion : https://stackoverflow.com/questions/6624453/whats-the-correct-way-to-convert-bytes-to-a-hex-string-in-python-3
 
