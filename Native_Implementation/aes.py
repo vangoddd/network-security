@@ -246,7 +246,7 @@ def generateSubKey(key):
             #Substitue using s-box
             tempKey[j] = s_box[tempKey[j]]
             #XOR with Ki-4
-            tempKey[j] = tempKey[j] ^ expandedKey[i][j]
+            tempKey[j] = tempKey[j] ^ expandedKey[i * 4][j]
 
         #XOR with rcon
         tempKey[0] = tempKey[0] ^ rcon[0]
